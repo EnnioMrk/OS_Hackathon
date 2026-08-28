@@ -1,3 +1,5 @@
+import org.gradle.internal.os.OperatingSystem
+
 plugins {
     id 'eclipse'
     id 'idea'
@@ -21,6 +23,13 @@ minecraft {
         configureEach {
             workingDirectory project.file('run')
             property 'forge.logging.console.level', 'debug'
+            if (OperatingSystem.current().isWindows()) {
+                // Some networks intercept HTTPS; trust the Windows cert store instead
+                // of the JVM's bundled list (this JVM is forked separately from Gradle's
+                // own, so JAVA_OPTS/GRADLE_OPTS on the wrapper doesn't reach it).
+                // Windows-only trust store type -- must not apply on Mac/Linux.
+                jvmArgs '-Djavax.net.ssl.trustStoreType=Windows-ROOT'
+            }
             mods { baritonesocket { source sourceSets.main } }
         }
         client {

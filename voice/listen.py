@@ -8,6 +8,10 @@ model, and prints the text. No push-to-talk button needed.
 Run: python listen.py
 """
 
+import truststore
+
+truststore.inject_into_ssl()  # use Windows cert store -- needed on networks that intercept HTTPS
+
 import numpy as np
 import sounddevice as sd
 from faster_whisper import WhisperModel
@@ -48,7 +52,11 @@ def transcribe(audio: np.ndarray) -> str:
     return " ".join(segment.text for segment in segments).strip()
 
 
-def listen_and_transcribe():
+def listen_and_transcribe(on_text=None):
+    """Listens forever. Calls on_text(transcript) for each utterance (default: just prints it)."""
+    if on_text is None:
+        on_text = lambda text: print(f"> {text}")
+
     print("Listening... speak whenever you're ready. Ctrl+C to stop.")
     block_size = int(SAMPLE_RATE * BLOCK_DURATION)
 
@@ -62,7 +70,7 @@ def listen_and_transcribe():
         audio = np.concatenate(buffer)
         text = transcribe(audio)
         if text:
-            print(f"> {text}")
+            on_text(text)
         buffer = []
         speaking = False
         silence_time = 0.0

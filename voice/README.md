@@ -56,7 +56,9 @@ to the noise floor causes unreliable, overly long recordings.
   getting wrong.
 - `MAX_UTTERANCE` caps how long one recording can run (default 8s), so a
   noisy mic can't cause a runaway multi-second buffer.
-- If you get an SSL error downloading the model on first run, install
-  `pip-system-certs` (already in requirements.txt) — it fixes certificate
-  verification on networks that intercept HTTPS (e.g. some university/corp
-  networks).
+- If you get an SSL error downloading the model on first run, this is
+  already handled: both scripts call `truststore.inject_into_ssl()` on
+  startup, which fixes certificate verification on networks that intercept
+  HTTPS (e.g. some university/corp networks). Don't add `pip-system-certs`
+  — it patches SSL globally for every Python process and conflicts with
+  the `brain/` component's own SSL handling, causing a crash there.

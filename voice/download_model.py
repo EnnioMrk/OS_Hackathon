@@ -7,6 +7,10 @@ nothing and exits immediately instead of re-downloading.
 Run: python download_model.py
 """
 
+import truststore
+
+truststore.inject_into_ssl()  # use Windows cert store -- needed on networks that intercept HTTPS
+
 from faster_whisper import WhisperModel
 
 MODEL_SIZE = "small"  # must match MODEL_SIZE in listen.py
