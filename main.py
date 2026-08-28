@@ -1,10 +1,12 @@
 """
-Full pipeline: voice -> AI decides commands -> send over socket.
+Full pipeline: voice -> AI decides commands -> send over socket -> replan on failure.
 
 Speak an instruction; when you pause, it's transcribed, sent to the AI to
 turn into commands (from AI_COMMANDS.md), and those commands are sent to
-the game one at a time -- waiting for each to finish before the next --
-then it goes back to listening for your next instruction.
+the game one at a time -- waiting for each to finish before the next. If a
+command fails, the AI is told what went wrong and gets to revise the plan
+(up to a couple of retries) before giving up and reporting back. Then it
+goes back to listening for your next instruction.
 
 Requires:
   - voice/ and brain/ dependencies installed (see their requirements.txt)
@@ -22,39 +24,28 @@ sys.path.insert(0, str(ROOT / "voice"))
 sys.path.insert(0, str(ROOT / "brain"))
 
 from listen import listen_and_transcribe  # noqa: E402
-from decide import decide  # noqa: E402
-from socket_client import run_commands  # noqa: E402
+from pipeline import run_instruction  # noqa: E402
+from socket_client import BridgeConnection  # noqa: E402
 
 
-def handle_instruction(text: str):
-    print(f"\n=== Heard: {text} ===")
+def main():
+    conn = BridgeConnection()
 
-    try:
-        plan = decide(text)
-    except Exception as e:
-        print(f"[ai] failed to turn that into commands: {e}")
-        return
+    def handle_instruction(text: str):
+        print(f"\n=== Heard: {text} ===")
+        try:
+            run_instruction(text, conn=conn)
+        except Exception as e:
+            print(f"[pipeline] failed: {e}")
+        print("\n=== Listening for the next instruction ===")
 
-    print("To-do list:")
-    for item in plan["todo"]:
-        print(f"  - {item}")
-
-    print("Sending commands:")
-    try:
-        results = run_commands(plan["commands"])
-    except Exception as e:
-        print(f"[bridge] failed to reach the game: {e}")
-        return
-
-    print("Summary:")
-    for cmd, result in zip(plan["commands"], results):
-        print(f"  {cmd}: {result.get('status')} - {result.get('message', '')}")
-
-    print("\n=== Listening for the next instruction ===")
-
-
-if __name__ == "__main__":
     try:
         listen_and_transcribe(on_text=handle_instruction)
     except KeyboardInterrupt:
         print("\nStopped.")
+    finally:
+        conn.close()
+
+
+if __name__ == "__main__":
+    main()

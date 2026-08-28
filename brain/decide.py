@@ -74,12 +74,17 @@ SUBMIT_TOOL = {
 }
 
 
-def decide(instruction: str) -> dict:
+def decide(instruction: str, context: str | None = None) -> dict:
+    """context: what went wrong on a previous attempt, if this is a replan."""
+    user_message = instruction
+    if context:
+        user_message += f"\n\n(Note: {context}. Adjust the plan to work around this -- try a different approach.)"
+
     response = client.chat.completions.create(
         model=MODEL,
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": instruction},
+            {"role": "user", "content": user_message},
         ],
         tools=[SUBMIT_TOOL],
         tool_choice={"type": "function", "function": {"name": "submit_commands"}},
