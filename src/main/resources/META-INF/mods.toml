@@ -1,0 +1,34 @@
+modLoader="javafml"
+loaderVersion="[52,)"
+license="MIT"
+
+[[mods]]
+modId="baritonesocket"
+version="${file.jarVersion}"
+displayName="Baritone Socket Bridge"
+description='''
+TCP bridge that buffers newline-delimited JSON commands and executes them
+through Baritone in order. Reports errors and task completion back to the
+connected client.
+'''
+
+[[dependencies.baritonesocket]]
+modId="forge"
+mandatory=true
+versionRange="[52,)"
+ordering="NONE"
+side="CLIENT"
+
+[[dependencies.baritonesocket]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.21.1,1.22)"
+ordering="NONE"
+side="CLIENT"
+
+[[dependencies.baritonesocket]]
+modId="baritoe"
+mandatory=true
+versionRange="*"
+ordering="AFTER"
+side="CLIENT"

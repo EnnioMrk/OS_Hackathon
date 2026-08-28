@@ -1,3 +1,14 @@
+.gradle/
+build/
+out/
+run/
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+bin/
+eclipse/
 __pycache__/
 *.pyc
 .venv/

@@ -1,0 +1,70 @@
+plugins {
+    id 'eclipse'
+    id 'idea'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+}
+
+version = '0.1.0'
+group = 'com.hackathon.baritonesocket'
+
+base {
+    archivesName = 'baritonesocket'
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+minecraft {
+    mappings channel: 'official', version: '1.21.1'
+    copyIdeResources = true
+
+    runs {
+        configureEach {
+            workingDirectory project.file('run')
+            property 'forge.logging.console.level', 'debug'
+            mods { baritonesocket { source sourceSets.main } }
+        }
+        client {
+        }
+    }
+}
+
+repositories {
+    // Hosts lwjgl-freetype-3.3.3-natives-macos-patch which is missing from Maven Central.
+    maven { url = 'https://libraries.minecraft.net/' }
+    // Baritone API jar is vendored in libs/ (ChicoMaven is not reliably reachable).
+    flatDir { dirs 'libs' }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:1.21.1-52.1.0"
+
+    // Compile against the Baritone API. At runtime Baritone itself must be
+    // installed (declared as a required dependency in mods.toml).
+    implementation fg.deobf('baritone-api-forge:baritone-api-forge:1.11.2')
+}
+
+jar {
+    manifest {
+        attributes([
+                'Specification-Title'   : 'baritonesocket',
+                'Specification-Vendor'  : 'OSHackathon',
+                'Specification-Version' : '1',
+                'Implementation-Title'  : project.name,
+                'Implementation-Version': project.jar.archiveVersion
+        ])
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+// Merge the resources and classes into the same directory.
+// FML's userdev classpath locator turns the directory containing mods.toml
+// into the mod file and scans only that directory, so the compiled @Mod
+// classes must live next to the resources.
+sourceSets.each {
+    def dir = layout.buildDirectory.dir("sourcesSets/$it.name")
+    it.output.resourcesDir = dir
+    it.java.destinationDirectory = dir
+}
