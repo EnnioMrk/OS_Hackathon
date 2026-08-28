@@ -1,7 +1,8 @@
 # Baritone Commands — Complete Reference (v1.11.2)
 
-Every command registered by Baritone v1.11.2 (Minecraft 1.21.1), verified
-against the Baritone source. In-game, commands are prefixed with `#` or `.b`
+Every command registered by Baritone v1.11.2 (Minecraft 1.21.1) — 42 command
+names including aliases — cross-checked against the in-game `#help` output and
+the Baritone source. In-game, commands are prefixed with `#` or `.b`
 (e.g. `#mine 5 iron_ore`).
 
 The **Baritone Socket Bridge** exposes a subset of these over TCP — see
@@ -141,6 +142,8 @@ Coordinates accept `~` relative offsets everywhere a position is expected.
 | Command     | Aliases               | Description                              |
 |-------------|-----------------------|------------------------------------------|
 | `set` *socket | `setting`, `settings` | View or change Baritone settings       |
+| `modified`  | `mod`, `baritone`, `modifiedsettings` | List modified settings (alias of `set modified`) |
+| `reset`     | —                     | Reset all settings or just one (alias of `set reset`) |
 | `click`     | —                     | Open the click-aim overlay (GUI)         |
 | `gc`        | —                     | Suggest a garbage collection run         |
 | `render`    | —                     | Fix glitched chunks                      |
@@ -161,6 +164,18 @@ Coordinates accept `~` relative offsets everywhere a position is expected.
 > repack
 > reloadall
 > saveall
+```
+
+## Convenience aliases (waypoint shortcuts)
+
+| Command    | Aliases | Description                            |
+|------------|---------|----------------------------------------|
+| `sethome`  | —       | Save your home waypoint at this position (alias of `waypoints save home`) |
+| `home`     | —       | Path back to your home waypoint (alias of `waypoints goto home`) |
+
+```text
+> sethome
+> home
 ```
 
 ---
