@@ -30,7 +30,8 @@ TCP client ──▶ SocketServer (accept + reader threads)
 ## Protocol
 
 Newline-delimited JSON, one object per line. A machine-oriented command
-reference for AI clients is in [`AI_COMMANDS.md`](AI_COMMANDS.md).
+reference for AI clients is in [`AI_COMMANDS.md`](AI_COMMANDS.md); the
+complete Baritone command catalog is in [`Commands.md`](Commands.md).
 
 ```jsonc
 // client -> server ('id' is optional; the server assigns one if omitted)
